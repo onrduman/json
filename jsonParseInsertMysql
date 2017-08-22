@@ -1,0 +1,69 @@
+
+package dbconnection;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.json.simple.JSONArray;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+
+
+public class dbConnection {
+
+    static  String  jsonfirstname [],jsonlastname[],jsongender[],jsonipaddress[],jsonemail[];
+    public static void main(String[]args) throws Exception
+    {
+        
+       
+        Class.forName("com.mysql.jdbc.Connection");
+        Connection con = (Connection)DriverManager.getConnection("jdbc:mysql://localhost:3306/deneme","root","1234");
+        
+            JSONParser jsonparser = new JSONParser();
+            JSONArray array = (JSONArray) jsonparser.parse(new FileReader("C:\\jsondata.json"));
+
+            jsonfirstname= new String[array.size()];
+            jsonlastname= new String[array.size()];
+            jsongender= new String[array.size()];
+            jsonipaddress= new String[array.size()];
+            jsonemail= new String[array.size()];
+            for(int i=0;i<=array.size()-1;i++){
+
+                String id = (String) array.get(i).toString();
+                JSONObject object = new JSONObject(id);
+
+                jsonfirstname[i]=(String) object.get("first_name");
+                jsonlastname[i]=(String) object.get("last_name");
+                jsongender[i]=(String) object.get("gender");
+                jsonipaddress[i]=(String) object.get("ip_address");
+                jsonemail[i]=(String) object.get("email");
+                
+            }
+        
+        String query ="";
+       
+      for(int j=0;j<jsonfirstname.length;j++){
+        query = "INSERT INTO denemedatabase(first_name,last_name,gender,ip_address,email)VALUES('"+jsonfirstname[j]+"','"+jsonlastname[j]+"','"+jsongender[j]+"','"+jsonipaddress[j]+"','"+jsonemail[j]+"')";
+        
+         Statement st = (Statement) con.createStatement();
+        st.executeUpdate(query);
+      }
+        
+       
+        
+     
+      //  int executeUpdate = st.executeUpdate(query);
+                System.out.println("Success");
+        
+       
+        
+        
+    }
+    
+}
